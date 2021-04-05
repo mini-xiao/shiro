@@ -14,8 +14,8 @@ public class controller {
 
     @RequestMapping("/login")
     public String login(String username, String password) {
-        System.out.println("name"+ username);
-        System.out.println("pwd"+ password);
+        System.out.println("name:"+ username);
+        System.out.println("pwd:"+ password);
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
@@ -49,6 +49,21 @@ public class controller {
         return code;
     }
 
+    @RequestMapping("/test01")
+    @RequiresPermissions( "test01")
+    public String test01() {
+        boolean permitted = SecurityUtils.getSubject().isPermitted("test01");
+        System.out.println(permitted);
+        return "test01";
+    }
+
+    @RequestMapping("/authority")
+    @RequiresPermissions( "authority")
+    public String authority() {
+        boolean permitted = SecurityUtils.getSubject().isPermitted("authority");
+        System.out.println(permitted);
+        return "authority";
+    }
 //    @RequestMapping("/logout")
 //    public void logout() {
 //        System.out.println("logout");

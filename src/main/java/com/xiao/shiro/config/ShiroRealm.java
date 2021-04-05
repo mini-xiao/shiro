@@ -22,8 +22,7 @@ public class ShiroRealm extends AuthorizingRealm {
         String username = (String) SecurityUtils.getSubject().getPrincipal();
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         Set<String> stringSet = new HashSet<>();
-        stringSet.add("user:show");
-        stringSet.add("user:admin");
+        stringSet.add("test01");
         info.setStringPermissions(stringSet);
         return info;
     }
