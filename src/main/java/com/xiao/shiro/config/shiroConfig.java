@@ -1,14 +1,20 @@
 package com.xiao.shiro.config;
 
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 public class shiroConfig {
 
@@ -16,6 +22,7 @@ public class shiroConfig {
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
         System.out.println("shiroFilterFactoryBean");
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.getFilters().put("authc", new ShiroFilter());
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // 设置默认登录的 URL，身份认证失败会访问该 URL
         shiroFilterFactoryBean.setLoginUrl("/controller/login");
@@ -29,7 +36,7 @@ public class shiroConfig {
         // filterChainDefinitionMap.put("/controller/current", "perms[\"user:abc\"]");
         filterChainDefinitionMap.put("/controller/logout", "logout");
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
-        filterChainDefinitionMap.put("/controller/authority", "authc");
+        filterChainDefinitionMap.put("/controller/**", "authc");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
@@ -48,4 +55,23 @@ public class shiroConfig {
         return new ShiroRealm();
     }
 
+    @Bean
+    LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
+    @Bean
+    @DependsOn({ "lifecycleBeanPostProcessor" })
+    DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator result = new DefaultAdvisorAutoProxyCreator();
+        result.setProxyTargetClass(true);
+        return result;
+    }
+
+    @Bean
+    AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor result = new AuthorizationAttributeSourceAdvisor();
+        result.setSecurityManager(securityManager);
+        return result;
+    }
 }

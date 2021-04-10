@@ -1,21 +1,22 @@
 package com.xiao.shiro.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/controller")
 public class controller {
 
     @RequestMapping("/login")
     public String login(String username, String password) {
-        System.out.println("name:"+ username);
-        System.out.println("pwd:"+ password);
+        log.info("name:"+ username);
+        log.info("pwd:"+ password);
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
@@ -52,16 +53,12 @@ public class controller {
     @RequestMapping("/test01")
     @RequiresPermissions( "test01")
     public String test01() {
-        boolean permitted = SecurityUtils.getSubject().isPermitted("test01");
-        System.out.println(permitted);
         return "test01";
     }
 
     @RequestMapping("/authority")
     @RequiresPermissions( "authority")
     public String authority() {
-        boolean permitted = SecurityUtils.getSubject().isPermitted("authority");
-        System.out.println(permitted);
         return "authority";
     }
 //    @RequestMapping("/logout")
