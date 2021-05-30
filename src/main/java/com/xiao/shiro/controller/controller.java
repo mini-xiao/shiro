@@ -1,5 +1,6 @@
 package com.xiao.shiro.controller;
 
+import com.sun.corba.se.spi.logging.LogWrapperBase;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -15,8 +16,9 @@ public class controller {
 
     @RequestMapping("/login")
     public String login(String username, String password) {
-        log.info("name:"+ username);
-        log.info("pwd:"+ password);
+
+        log.info("name:" + username);
+        log.info("pwd:" + password);
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
@@ -45,25 +47,34 @@ public class controller {
 
     @RequestMapping("/current")
     public String current() {
-        String code= (String) SecurityUtils.getSubject().getPrincipal();
+        String code = (String) SecurityUtils.getSubject().getPrincipal();
         System.out.println(code);
         return code;
     }
 
-    @RequestMapping("/test01")
-    @RequiresPermissions( "test01")
-    public String test01() {
-        return "test01";
+    @RequestMapping("/test")
+    @RequiresPermissions("test")
+    public String test() {
+        return "test";
     }
 
     @RequestMapping("/authority")
-    @RequiresPermissions( "authority")
+    @RequiresPermissions("authority")
     public String authority() {
         return "authority";
     }
-//    @RequestMapping("/logout")
-//    public void logout() {
-//        System.out.println("logout");
-//        SecurityUtils.getSubject().logout();
-//    }
+
+    @RequestMapping("/success")
+    public String success() {
+        System.out.println("success方法");
+        return "成功";
+    }
+
+    @RequestMapping("/logout")
+    public String logout() {
+        System.out.println("logout");
+        SecurityUtils.getSubject().logout();
+        return "退出成功";
+    }
+
 }

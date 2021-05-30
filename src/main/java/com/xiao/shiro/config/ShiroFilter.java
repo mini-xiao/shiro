@@ -11,16 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 public class ShiroFilter extends FormAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        log.info("----------filter Allowed----------");
-        log.info("mappedValue："+ mappedValue);
+        log.info("----------判断是否已登录----------");
         return super.isAccessAllowed(request, response, mappedValue);
     }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws java.lang.Exception {
-        log.info("----------filter Denied----------");
+        log.info("----------未登录！！！----------");
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        httpServletResponse.getWriter().write("filter Denied");
+        httpServletResponse.getWriter().write("fail");
         return false;
     }
 

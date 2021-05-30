@@ -20,8 +20,9 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        log.info("---------权限认证-------------");
+        log.info("---------用户权限授权-------------");
         String username = (String) SecurityUtils.getSubject().getPrincipal();
+        // 连接数据库查询对应的账号权限，传入SimpleAuthenticationInfo中
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         Set<String> stringSet = new HashSet<>();
         stringSet.add("authority");
@@ -33,11 +34,9 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         log.info("-------身份认证方法--------");
         String userName = (String) authenticationToken.getPrincipal();
-        if (userName == null) {
-            throw new AccountException("未登录");
-        } else if (!userName.equals(name )) {
-            throw new AccountException("账号不正确");
-        }
-        return new SimpleAuthenticationInfo(userName, password,getName());
+        // 连接数据库查询对应账号密码，传入SimpleAuthenticationInfo中
+        // 此处需校验对应账号是否存在
+        if (!userName.equals(name)) throw new AccountException("账号不存在");
+        return new SimpleAuthenticationInfo(name, password, getName());
     }
 }

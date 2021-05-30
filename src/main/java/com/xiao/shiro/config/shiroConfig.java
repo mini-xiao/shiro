@@ -18,23 +18,16 @@ import java.util.Map;
 @Configuration
 public class shiroConfig {
 
-    @Bean(name = "shiroFilterFactoryBean")
-    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
-        System.out.println("shiroFilterFactoryBean");
+    @Bean
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
+        log.info("----shiroFilterFactoryBean启动----");
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.getFilters().put("authc", new ShiroFilter());
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        // 设置默认登录的 URL，身份认证失败会访问该 URL
-        shiroFilterFactoryBean.setLoginUrl("/controller/login");
-        // 设置成功之后要跳转的链接
-        shiroFilterFactoryBean.setSuccessUrl("/controller/success");
-        // 设置未授权界面，权限认证失败会访问该 URL
-        shiroFilterFactoryBean.setUnauthorizedUrl("/notRole");
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
-        // <!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
+        // authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问
         filterChainDefinitionMap.put("/controller/login", "anon");
-        // filterChainDefinitionMap.put("/controller/current", "perms[\"user:abc\"]");
-        filterChainDefinitionMap.put("/controller/logout", "logout");
+        filterChainDefinitionMap.put("/controller/logout", "anon");
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
         filterChainDefinitionMap.put("/controller/**", "authc");
 
@@ -61,13 +54,20 @@ public class shiroConfig {
     }
 
     @Bean
-    @DependsOn({ "lifecycleBeanPostProcessor" })
+    @DependsOn({"lifecycleBeanPostProcessor"})
     DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator() {
         DefaultAdvisorAutoProxyCreator result = new DefaultAdvisorAutoProxyCreator();
         result.setProxyTargetClass(true);
         return result;
     }
 
+    /**
+     * 开启shiro aop注解支持.
+     * 使用代理方式;所以需要开启代码支持;
+     *
+     * @param securityManager
+     * @return
+     */
     @Bean
     AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor result = new AuthorizationAttributeSourceAdvisor();
